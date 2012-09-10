@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * @doc
+ *
+ */
+
+
+/************************************************************************************************************
+ * Drupal Hooks
+ ***********************************************************************************************************/
+
+/**
+ * Implements hook_block_info
+ */
+function hc_trainings_block_info() {
+  $blocks = array();
+  
+  $blocks['training_service_region_page'] = array(
+    'info' => 'Training Packages for this Training Service and chosen Region',
+  );
+  
+  return $blocks;
+}
+
+
+
+
+/**
+ * Implements hook_block_view
+ */
+function hc_trainings_block_view($delta = "") {
+  $block = array();
+  switch ($delta) {
+    case 'training_service_region_page':
+      $block['subject'] = "Training Packages in your Region";
+      $block['content'] = _hc_trainings_region();
+  }
+  
+  return $block;
+
+}
+
+
+/************************************************************************************************************
+ * Internal Helper Functions
+ ***********************************************************************************************************/
+
+
+/**
+ * Helper function for rendering training packages for this service and REGION
+ **/
+function _hc_trainings_region() {
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $nid = arg(1);
+  }
+
+	// get current region from session
+	$region = $_SESSION['region'];
+
+	// first, get the TYPE of training (ITIL, COBIT….) -> taxonomy  
+	$node = node_load($nid);
+	$title = $node->title;
+	$training_type_field = field_get_items('node', $node, 'field_training_term');
+	if (is_array($training_type_field) && isset($training_type_field[0]['tid'])) {
+	  $training_type_tid = $training_type_field[0]['tid'];
+	}
+
+	// second, get PRODUCT ID's for "training_variations" w/ this term id
+	$product_ids = array();
+	$result = db_query("SELECT * FROM {commerce_product} cp, {field_revision_field_package_type} fpt, {field_revision_field_region} fr WHERE cp.type='training_variation' AND cp.revision_id = fpt.revision_id AND cp.revision_id = fr.revision_id AND fpt.field_package_type_tid=:tid AND fr.field_region_value=:region;", array(':tid' => $training_type_tid, ':region' => $region));
+	foreach ($result as $row) {
+	  $product_ids[] = $row->product_id;
+	}
+	
+	// third, get TRAINING PACKAGE (node) NIDS
+	$training_package_nids = array();
+	foreach ($product_ids as $product_id) {
+		$result = db_query("SELECT entity_id FROM {field_revision_field_training_sessions} WHERE field_training_sessions_product_id=:product_id;", array(':product_id' => $product_id));
+		foreach ($result as $row) {
+			$training_package_nids[] = $row->entity_id;
+		}
+	}
+	
+	$training_package_nids = implode(',', array_unique($training_package_nids));
+
+  if (empty($training_package_nids)) {
+    $output = "No trainings found in your region.";
+  } else {
+    $output = views_embed_view('training_packages', 'default', $training_package_nids);  
+  }
+
+  $url_all = url('training-packages', array('query' => array('field_package_type_tid' => $training_type_tid)));
+
+  $output .= "<div><a href='$url_all'>All training packages for $title</a></div>";
+
+
+	return $output;
+  
+}

@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @doc
+ *
+ */
+
+
+/**
+ * Implements hook_init
+ */
+function hc_product_ui_init() {
+  $path = drupal_get_path('module', 'hc_product_ui') . "/js";
+  drupal_add_js($path . "/hc_product_ui.js");
+}
+
+
+/**
+ * Implements hook_form_alter
+ */
+function hc_product_ui_form_alter(&$form, &$form_state, $form_id) {
+//  print $form_id . "<br />";
+  if (substr($form_id, 0, 30) == 'commerce_cart_add_to_cart_form') {
+    $form['product_id']['#type'] = "radios" ;
+    /*
+    if (isset($_GET['pid'])) {
+      $form['product_id']['#default_value'] = $_GET['pid'];
+    }
+    /*
+    print "<pre>";
+		print_r($form);
+		print "</pre>";
+*/
+  }
+}

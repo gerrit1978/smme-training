@@ -1,0 +1,40 @@
+/* This file will hold styles for the mobile version of your website (mobile first). */
+/* This also can include ANY global CSS that applies site-wide. Unless overwritten by a more specific style rule, CSS declarations in global.css will apply site-wide. */
+
+.block-menu ul { 
+  margin: 0; 
+}
+
+.block-menu ul li {
+  list-style:none;
+  float: left;
+}
+
+
+HTML, BODY {
+  height: 100%;
+  font-family: "Open Sans";
+}
+
+#page {
+  min-height: 100%;
+  position: relative;
+}
+
+#section-content {
+  padding-bottom: 150px;
+}
+
+#section-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100px;
+}
+
+h1 {
+  font-family: "DroidSansRegular";
+  font-weight: lighter;
+  font-size: 42px;
+  margin: 0;
+}

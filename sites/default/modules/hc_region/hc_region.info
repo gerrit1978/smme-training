@@ -1,0 +1,6 @@
+name             = Region Selection
+description      = Provides functionality for region selection and overrides
+core             = 7.x
+version          = 7.x-1.0
+package          = HedgeComm
+dependencies[]   = ip2country

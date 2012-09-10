@@ -1,0 +1,9 @@
+--- commerce_ogone.info
++++ commerce_ogone.info
+@@ -7,3 +7,6 @@
+ dependencies[] = commerce_order
+ core = 7.x
+ configure = admin/commerce/config/payment-methods
++
++files[] = commerce_ogone.rules.inc
++files[] = commerce_ogone.rules_defaults.inc

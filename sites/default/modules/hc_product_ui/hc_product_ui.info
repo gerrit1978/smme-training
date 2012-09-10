@@ -1,0 +1,8 @@
+name            = Product UI
+description     = Provides specific functionality for adding products to cart etc
+core            = 7.x
+version         = 7.x-1.0
+package         = HedgeComm
+
+dependencies[]  = commerce_product
+dependencies[]  = commerce_cart

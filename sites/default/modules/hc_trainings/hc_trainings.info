@@ -1,0 +1,6 @@
+name            = Training Packages
+description     = Provides blocks with current training packages for specific services
+core            = 7.x
+version         = 7.x-1.0
+package         = HedgeComm
+dependencies[]  = views

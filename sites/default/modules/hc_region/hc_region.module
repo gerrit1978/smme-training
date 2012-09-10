@@ -1,0 +1,146 @@
+<?php
+
+
+/**
+ * Implements hook_init
+ */
+function hc_region_init() {
+  $path = drupal_get_path('module', 'hc_region') . "/js/";
+  drupal_add_js($path . 'hc_region.js');
+  
+  // check for session parameter
+  if (!isset($_SESSION['region'])) {
+//		print "Nog geen region uit de sessie gevonden, zal nu gezet worden. <br />";
+    _hc_region_set_session_region();
+//    print "Nu is die " . $_SESSION['region'];
+  }
+  
+}
+
+
+/**
+ * Implements hook_block_info
+ */
+function hc_region_block_info() {
+  $blocks = array();
+  
+  $blocks['region_selection'] = array(
+    'info' => t('Choose region'),
+  );
+  
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view
+ */
+function hc_region_block_view($delta = "") {
+  $block = array();
+  switch ($delta) {
+    case 'region_selection':
+      $block['subject'] = '';
+      $block['content'] = array(
+        '#prefix' => _hc_region_block_current_region(),
+        '#markup' => drupal_render(drupal_get_form('hc_region_form')),
+      );
+      break;
+  }
+  
+  return $block;
+}
+
+/**
+ * Renders region selection form as part of the region block
+ */
+function hc_region_form($form, &$form_state) {
+
+	// get default value from session
+  $default_value = $_SESSION['region'];
+
+  $form = array(
+    'region' => array(
+      '#type' => 'select',
+      '#options' => _hc_region_options(),
+      '#default_value' => $default_value,
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#attributes' => array(
+        'class' => array(
+          'element-invisible',
+        ),
+      ), 
+    ),
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit function for region selection form
+ */
+function hc_region_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $region = $values['region'];
+
+	// set region session parameter
+	$_SESSION['region'] = $region;
+	drupal_set_message('Thanks for changing your region into ' . $region);
+}
+
+
+
+/**
+ * Helper function for rendering current region
+ */
+function _hc_region_block_current_region() {
+	$region = $_SESSION['region'];
+	$allowed_regions = _hc_region_options();
+	
+  return t('Current region: @region.', array('@region' => $allowed_regions[$region]));
+}
+
+
+/**
+ * Helper function for setting region in session
+ */
+function _hc_region_set_session_region() {
+  global $user;
+	if (isset($user->data['country_iso_code_2'])) {
+		$country_code = $user->data['country_iso_code_2'];
+	} else {
+    $ip = $_SERVER['REMOTE_ADDR'];
+//		$ip = "157.166.255.19"; /** USA **/
+//		$ip = "91.75.73.40"; /** DUBAI - UAE **/
+	  $country_code = ip2country_get_country($ip);
+	}
+
+	switch ($country_code) {
+	  case 'BE':
+	  default:
+	    $region = "BE";
+	    break;
+	  case 'US':
+	    $region = "US";
+	    break;
+	  case 'AE':
+	    $region = "AE";
+	    break;
+	}
+
+	$_SESSION['region'] = $region;	
+
+}
+
+
+/**
+ * Helper function for defining the region options
+ */
+function _hc_region_options() {
+  return array(
+    'BE' => 'Brussels',
+    'US' => 'USA',
+    'AE' => 'Dubai',
+  );
+}
