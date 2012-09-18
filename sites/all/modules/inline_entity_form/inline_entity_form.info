@@ -6,12 +6,13 @@ core = 7.x
 
 files[] = includes/entity.inline_entity_form.inc
 files[] = includes/node.inline_entity_form.inc
+files[] = includes/taxonomy_term.inline_entity_form.inc
 files[] = includes/commerce_product.inline_entity_form.inc
 files[] = includes/commerce_line_item.inline_entity_form.inc
 
-; Information added by drupal.org packaging script on 2012-08-20
-version = "7.x-1.0-beta4"
+; Information added by drupal.org packaging script on 2012-09-17
+version = "7.x-1.0-rc1"
 core = "7.x"
 project = "inline_entity_form"
-datestamp = "1345447648"
+datestamp = "1347887963"
 
